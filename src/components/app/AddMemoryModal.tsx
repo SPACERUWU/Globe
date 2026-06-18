@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { X, Upload, Image as ImageIcon } from 'lucide-react'
+import { X, Upload, Image as ImageIcon, LocateFixed } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../context/AuthContext'
 
@@ -32,11 +32,24 @@ export function AddMemoryModal({ open, tripId, onClose, onCreated }: Props) {
   const [preview, setPreview] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+  const [lat, setLat] = useState<number | null>(null)
+  const [lng, setLng] = useState<number | null>(null)
+  const [locating, setLocating] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
 
   const reset = () => {
     setCaption(''); setLocation(''); setDate(''); setCategory('moment')
     setFile(null); setPreview(null); setError(''); setSaving(false)
+    setLat(null); setLng(null)
+  }
+
+  const useCurrentLocation = () => {
+    if (!navigator.geolocation) return
+    setLocating(true)
+    navigator.geolocation.getCurrentPosition(
+      pos => { setLat(pos.coords.latitude); setLng(pos.coords.longitude); setLocating(false) },
+      () => setLocating(false),
+    )
   }
 
   const handleClose = () => { reset(); onClose() }
@@ -79,6 +92,8 @@ export function AddMemoryModal({ open, tripId, onClose, onCreated }: Props) {
       caption: caption.trim() || null,
       photo_url,
       location_name: location.trim() || null,
+      latitude: lat,
+      longitude: lng,
       memory_date: date || null,
       category,
     })
@@ -177,9 +192,30 @@ export function AddMemoryModal({ open, tripId, onClose, onCreated }: Props) {
 
               {/* Location + Date */}
               <div className="grid grid-cols-2 gap-3">
-                <input className={INPUT} placeholder="Location" value={location} onChange={e => setLocation(e.target.value)} />
+                <input className={INPUT} placeholder="Location name" value={location} onChange={e => setLocation(e.target.value)} />
                 <input type="date" className={INPUT} value={date} onChange={e => setDate(e.target.value)} />
               </div>
+
+              {/* Pin on globe */}
+              <button
+                type="button"
+                onClick={useCurrentLocation}
+                disabled={locating}
+                className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-xs transition-all ${
+                  lat !== null
+                    ? 'border-[#3D81E3]/40 bg-[#3D81E3]/10 text-[#3D81E3]'
+                    : 'border-white/[0.08] bg-white/[0.02] text-white/40 hover:text-white/60 hover:border-white/15'
+                } disabled:opacity-50`}
+              >
+                <LocateFixed className="w-3.5 h-3.5" />
+                {locating ? 'Getting location…' : lat !== null ? `📍 Pinned (${lat.toFixed(2)}, ${lng?.toFixed(2)})` : 'Pin on globe'}
+                {lat !== null && (
+                  <span
+                    className="ml-auto text-white/30 hover:text-white/60"
+                    onClick={e => { e.stopPropagation(); setLat(null); setLng(null) }}
+                  >✕</span>
+                )}
+              </button>
             </div>
 
             {error && <p className="mt-3 text-xs text-red-400">{error}</p>}

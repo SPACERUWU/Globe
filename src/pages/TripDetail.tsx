@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'motion/react'
-import { ArrowLeft, Plus, Pencil, MapPin, Utensils, Users, Sparkles, Trash2, Image as Img, ImagePlus, Share2, Copy, Check } from 'lucide-react'
+import { ArrowLeft, Plus, Pencil, MapPin, Utensils, Users, Sparkles, Trash2, Image as Img, ImagePlus, Share2, Copy, Check, Download } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 import { Trip, Memory } from '../types'
@@ -11,6 +11,7 @@ import { AddMemoryModal } from '../components/app/AddMemoryModal'
 import { EditMemoryModal } from '../components/app/EditMemoryModal'
 import { EditTripModal } from '../components/app/EditTripModal'
 import { PhotoLightbox, LightboxPhoto } from '../components/app/PhotoLightbox'
+import { PackingList } from '../components/app/PackingList'
 
 const CATEGORY_META: Record<string, { icon: typeof MapPin; color: string; bg: string }> = {
   place:  { icon: MapPin,   color: '#00d2ff', bg: 'bg-[#00d2ff]/10' },
@@ -36,6 +37,8 @@ export default function TripDetail() {
   const [showShare, setShowShare] = useState(false)
   const [copied, setCopied] = useState(false)
   const [togglingPublic, setTogglingPublic] = useState(false)
+  // Packing list
+  const [showPacking, setShowPacking] = useState(false)
   // Lightbox
   const [lightboxPhotos, setLightboxPhotos] = useState<LightboxPhoto[]>([])
   const [lightboxIdx, setLightboxIdx] = useState(0)
@@ -112,6 +115,81 @@ export default function TripDetail() {
     setShowLightbox(true)
   }
 
+  const exportCard = () => {
+    if (!trip) return
+    const W = 1080, H = 1080
+    const canvas = document.createElement('canvas')
+    canvas.width = W; canvas.height = H
+    const ctx = canvas.getContext('2d')!
+
+    // Background gradient
+    const bg = ctx.createLinearGradient(0, 0, 0, H)
+    bg.addColorStop(0, '#0d1f3c')
+    bg.addColorStop(1, '#030711')
+    ctx.fillStyle = bg
+    ctx.fillRect(0, 0, W, H)
+
+    // Blue glow
+    const glow = ctx.createRadialGradient(W / 2, H * 0.35, 0, W / 2, H * 0.35, 420)
+    glow.addColorStop(0, 'rgba(61,129,227,0.14)')
+    glow.addColorStop(1, 'transparent')
+    ctx.fillStyle = glow
+    ctx.fillRect(0, 0, W, H)
+
+    // Flag emoji
+    ctx.font = '220px serif'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'alphabetic'
+    ctx.fillText(flagEmoji(trip.country_code), W / 2, H * 0.38)
+
+    // Country
+    ctx.font = '500 30px -apple-system, BlinkMacSystemFont, Inter, sans-serif'
+    ctx.fillStyle = 'rgba(255,255,255,0.4)'
+    ctx.fillText(trip.country_name.toUpperCase(), W / 2, H * 0.48)
+
+    // Title — word wrap
+    ctx.font = 'bold 72px -apple-system, BlinkMacSystemFont, Inter, sans-serif'
+    ctx.fillStyle = '#ffffff'
+    const words = trip.title.split(' ')
+    let line = '', lines: string[] = []
+    for (const word of words) {
+      const test = line ? `${line} ${word}` : word
+      if (ctx.measureText(test).width > 900) { lines.push(line); line = word } else { line = test }
+    }
+    lines.push(line)
+    const titleY = H * 0.57
+    lines.forEach((l, i) => ctx.fillText(l, W / 2, titleY + i * 88))
+
+    const afterTitle = titleY + (lines.length - 1) * 88 + 60
+
+    // Dates
+    if (dateLine) {
+      ctx.font = '500 32px -apple-system, BlinkMacSystemFont, Inter, sans-serif'
+      ctx.fillStyle = 'rgba(255,255,255,0.38)'
+      ctx.fillText(dateLine, W / 2, afterTitle)
+    }
+
+    // Memory count
+    ctx.font = '600 24px -apple-system, BlinkMacSystemFont, Inter, sans-serif'
+    ctx.fillStyle = 'rgba(255,255,255,0.2)'
+    ctx.fillText(`${memories.length} ${memories.length === 1 ? 'memory' : 'memories'}`, W / 2, afterTitle + 50)
+
+    // App name
+    ctx.font = '700 20px -apple-system, BlinkMacSystemFont, Inter, sans-serif'
+    ctx.fillStyle = 'rgba(255,255,255,0.1)'
+    ctx.fillText('GLOBE', W / 2, H - 50)
+
+    canvas.toBlob(blob => {
+      if (!blob) return
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${trip.title.replace(/[^a-z0-9]/gi, '_')}.png`
+      a.click()
+      URL.revokeObjectURL(url)
+    }, 'image/png')
+  }
+
   if (loading) return (
     <AppLayout>
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -131,6 +209,8 @@ export default function TripDetail() {
     </AppLayout>
   )
 
+  const todayStr = new Date().toISOString().slice(0, 10)
+  const isUpcoming = !!trip.start_date && trip.start_date > todayStr
   const dateLine = [fmtDate(trip.start_date), fmtDate(trip.end_date)].filter(Boolean).join(' – ')
   const photoMemories = memories.filter(m => m.photo_url)
   const displayMemories = filterCat ? memories.filter(m => m.category === filterCat) : memories
@@ -157,6 +237,13 @@ export default function TripDetail() {
             <h1 className="text-sm font-semibold text-white truncate">{trip.title}</h1>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
+            <button
+              onClick={exportCard}
+              className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors"
+              title="Export trip card"
+            >
+              <Download className="w-3.5 h-3.5 text-white/50" />
+            </button>
             <button
               onClick={() => setShowShare(s => !s)}
               className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${showShare ? 'bg-white/15 text-white' : 'bg-white/5 hover:bg-white/10 text-white/50'}`}
@@ -269,6 +356,22 @@ export default function TripDetail() {
           </div>
         )}
       </div>
+
+      {/* Packing list — upcoming trips only */}
+      {isUpcoming && (
+        <div className="px-4 pt-4">
+          <button
+            onClick={() => setShowPacking(s => !s)}
+            className="w-full flex items-center justify-between px-4 py-3 rounded-2xl border border-white/[0.07] bg-white/[0.02] hover:bg-white/[0.04] transition-all text-sm text-white/60 hover:text-white/80"
+          >
+            <span className="flex items-center gap-2 font-medium">
+              🧳 Packing List
+            </span>
+            <span className="text-[11px] text-white/30">{showPacking ? 'hide ▲' : 'show ▼'}</span>
+          </button>
+          {showPacking && <PackingList tripId={trip.id} />}
+        </div>
+      )}
 
       {/* Category filter pills */}
       {memories.length > 0 && (

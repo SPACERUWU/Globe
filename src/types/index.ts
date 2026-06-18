@@ -23,6 +23,8 @@ export interface Memory {
   caption: string | null
   photo_url: string | null
   location_name: string | null
+  latitude: number | null
+  longitude: number | null
   memory_date: string | null
   category: 'place' | 'moment' | 'food' | 'people'
   created_at: string
@@ -35,5 +37,14 @@ export interface WishlistEntry {
   country_code: string
   country_geo: string
   note: string | null
+  created_at: string
+}
+
+export interface PackingItem {
+  id: string
+  trip_id: string
+  user_id: string
+  label: string
+  checked: boolean
   created_at: string
 }

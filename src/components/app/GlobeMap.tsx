@@ -1,10 +1,9 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
-import { geoOrthographic, geoPath, geoGraticule } from 'd3-geo'
+import { geoOrthographic, geoPath, geoGraticule, geoDistance } from 'd3-geo'
 import { feature } from 'topojson-client'
 
 const GEO_URL = 'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json'
 
-// Equator as a GeoJSON LineString
 const EQUATOR = {
   type: 'Feature' as const,
   geometry: {
@@ -16,22 +15,30 @@ const EQUATOR = {
 
 type Rot = [number, number, number]
 
+export interface MemoryPin {
+  lat: number
+  lng: number
+  label: string
+}
+
 interface GlobeMapProps {
   visitedGeoNames: string[]
   wishlistGeoNames?: string[]
   onCountryClick?: (name: string) => void
+  memoryPins?: MemoryPin[]
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type GeoFeature = any
 
-export function GlobeMap({ visitedGeoNames, wishlistGeoNames = [], onCountryClick }: GlobeMapProps) {
+export function GlobeMap({ visitedGeoNames, wishlistGeoNames = [], onCountryClick, memoryPins = [] }: GlobeMapProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [size, setSize] = useState(400)
   const [rotation, setRotation] = useState<Rot>([0, -20, 0])
   const rotRef = useRef<Rot>([0, -20, 0])
   const [countries, setCountries] = useState<GeoFeature[]>([])
   const [hovered, setHovered] = useState<{ name: string; visited: boolean; wishlist: boolean } | null>(null)
+  const [hoveredPin, setHoveredPin] = useState<{ label: string } | null>(null)
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 })
 
   const isDragging = useRef(false)
@@ -41,7 +48,6 @@ export function GlobeMap({ visitedGeoNames, wishlistGeoNames = [], onCountryClic
   const isSpinning = useRef(true)
   const resumeTimer = useRef<ReturnType<typeof setTimeout>>()
 
-  // Responsive size: fills the container, keeping globe square
   useEffect(() => {
     const el = containerRef.current
     if (!el) return
@@ -57,7 +63,6 @@ export function GlobeMap({ visitedGeoNames, wishlistGeoNames = [], onCountryClic
     return () => obs.disconnect()
   }, [])
 
-  // Load world atlas
   useEffect(() => {
     fetch(GEO_URL)
       .then(r => r.json())
@@ -67,7 +72,6 @@ export function GlobeMap({ visitedGeoNames, wishlistGeoNames = [], onCountryClic
       })
   }, [])
 
-  // Spin loop
   useEffect(() => {
     const tick = () => {
       if (isSpinning.current) {
@@ -93,7 +97,6 @@ export function GlobeMap({ visitedGeoNames, wishlistGeoNames = [], onCountryClic
     resumeTimer.current = setTimeout(() => { isSpinning.current = true }, delay)
   }, [])
 
-  // Mouse drag
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     isDragging.current = true
     hasMoved.current = false
@@ -123,7 +126,6 @@ export function GlobeMap({ visitedGeoNames, wishlistGeoNames = [], onCountryClic
     isDragging.current = false
   }, [scheduleSpin])
 
-  // Touch drag
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     const t = e.touches[0]
     isDragging.current = true
@@ -156,8 +158,7 @@ export function GlobeMap({ visitedGeoNames, wishlistGeoNames = [], onCountryClic
     isDragging.current = false
   }, [scheduleSpin])
 
-  // Projection + paths (recalculated on size/rotation change)
-  const { radius, pathFn, graticuleD, equatorD } = useMemo(() => {
+  const { radius, projection, pathFn, graticuleD, equatorD } = useMemo(() => {
     const r = size / 2 - 2
     const proj = geoOrthographic()
       .scale(r)
@@ -168,6 +169,7 @@ export function GlobeMap({ visitedGeoNames, wishlistGeoNames = [], onCountryClic
     const grat = geoGraticule()
     return {
       radius: r,
+      projection: proj,
       pathFn: pg,
       graticuleD: pg(grat()) ?? '',
       equatorD: pg(EQUATOR as Parameters<typeof pg>[0]) ?? '',
@@ -176,6 +178,11 @@ export function GlobeMap({ visitedGeoNames, wishlistGeoNames = [], onCountryClic
 
   const cx = size / 2
   const cy = size / 2
+
+  // Center of the visible hemisphere in [lng, lat]
+  const visibleCenter: [number, number] = [-rotation[0], -rotation[1]]
+
+  const tooltipContent = hoveredPin ? { name: hoveredPin.label, type: 'pin' as const } : hovered ? { name: hovered.name, visited: hovered.visited, wishlist: hovered.wishlist, type: 'country' as const } : null
 
   return (
     <div
@@ -196,21 +203,23 @@ export function GlobeMap({ visitedGeoNames, wishlistGeoNames = [], onCountryClic
         style={{ display: 'block', touchAction: 'none' }}
       >
         <defs>
-          {/* 3D light sheen */}
           <radialGradient id="globe-sheen" cx="32%" cy="28%" r="62%">
             <stop offset="0%" stopColor="rgba(255,255,255,0.07)" />
             <stop offset="60%" stopColor="rgba(255,255,255,0)" />
             <stop offset="100%" stopColor="rgba(0,0,0,0.45)" />
           </radialGradient>
-          {/* Outer atmosphere glow */}
           <radialGradient id="globe-atmo" cx="50%" cy="50%" r="50%">
             <stop offset="72%" stopColor="transparent" />
             <stop offset="100%" stopColor="rgba(61,129,227,0.18)" />
           </radialGradient>
-          {/* Clip to sphere */}
           <clipPath id="globe-sphere-clip">
             <circle cx={cx} cy={cy} r={radius} />
           </clipPath>
+          {/* Pin glow filter */}
+          <filter id="pin-glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur" />
+            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+          </filter>
         </defs>
 
         {/* Atmosphere rings */}
@@ -223,25 +232,12 @@ export function GlobeMap({ visitedGeoNames, wishlistGeoNames = [], onCountryClic
 
         {/* Graticule */}
         {graticuleD && (
-          <path
-            d={graticuleD}
-            fill="none"
-            stroke="rgba(255,255,255,0.05)"
-            strokeWidth="0.5"
-            clipPath="url(#globe-sphere-clip)"
-          />
+          <path d={graticuleD} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="0.5" clipPath="url(#globe-sphere-clip)" />
         )}
 
         {/* Equator */}
         {equatorD && (
-          <path
-            d={equatorD}
-            fill="none"
-            stroke="rgba(61,129,227,0.35)"
-            strokeWidth="0.9"
-            strokeDasharray="3 4"
-            clipPath="url(#globe-sphere-clip)"
-          />
+          <path d={equatorD} fill="none" stroke="rgba(61,129,227,0.35)" strokeWidth="0.9" strokeDasharray="3 4" clipPath="url(#globe-sphere-clip)" />
         )}
 
         {/* Countries */}
@@ -251,7 +247,6 @@ export function GlobeMap({ visitedGeoNames, wishlistGeoNames = [], onCountryClic
           const wish = !visited && wishlistGeoNames.includes(name)
           const d = pathFn(f)
           if (!d) return null
-
           return (
             <path
               key={i}
@@ -262,46 +257,61 @@ export function GlobeMap({ visitedGeoNames, wishlistGeoNames = [], onCountryClic
               clipPath="url(#globe-sphere-clip)"
               style={{ cursor: onCountryClick ? 'pointer' : 'default' }}
               onClick={() => !hasMoved.current && onCountryClick?.(name)}
-              onMouseEnter={(e) => {
-                setHovered({ name, visited, wishlist: wish })
-                setTooltipPos({ x: e.clientX, y: e.clientY })
-              }}
+              onMouseEnter={(e) => { setHovered({ name, visited, wishlist: wish }); setHoveredPin(null); setTooltipPos({ x: e.clientX, y: e.clientY }) }}
               onMouseMove={(e) => setTooltipPos({ x: e.clientX, y: e.clientY })}
               onMouseLeave={() => setHovered(null)}
             />
           )
         })}
 
-        {/* 3D sheen overlay */}
-        <circle cx={cx} cy={cy} r={radius} fill="url(#globe-sheen)"  pointerEvents="none" />
-        <circle cx={cx} cy={cy} r={radius} fill="url(#globe-atmo)"   pointerEvents="none" />
+        {/* Memory pins */}
+        {memoryPins.map((pin, i) => {
+          const pt: [number, number] = [pin.lng, pin.lat]
+          if (geoDistance(visibleCenter, pt) > Math.PI / 2) return null
+          const projected = projection(pt)
+          if (!projected) return null
+          const [px, py] = projected
+          return (
+            <g key={i} style={{ cursor: 'pointer' }} filter="url(#pin-glow)" clipPath="url(#globe-sphere-clip)">
+              {/* Outer pulse ring */}
+              <circle cx={px} cy={py} r={8} fill="rgba(255,107,135,0.2)" />
+              {/* Pin dot */}
+              <circle
+                cx={px} cy={py} r={4.5}
+                fill="#ff6b87"
+                stroke="rgba(255,255,255,0.85)"
+                strokeWidth={1.2}
+                onMouseEnter={(e) => { setHoveredPin({ label: pin.label }); setHovered(null); setTooltipPos({ x: e.clientX, y: e.clientY }) }}
+                onMouseMove={(e) => setTooltipPos({ x: e.clientX, y: e.clientY })}
+                onMouseLeave={() => setHoveredPin(null)}
+              />
+            </g>
+          )
+        })}
+
+        {/* 3D sheen + atmosphere overlays */}
+        <circle cx={cx} cy={cy} r={radius} fill="url(#globe-sheen)" pointerEvents="none" />
+        <circle cx={cx} cy={cy} r={radius} fill="url(#globe-atmo)"  pointerEvents="none" />
 
         {/* Border ring */}
-        <circle
-          cx={cx} cy={cy} r={radius}
-          fill="none"
-          stroke="rgba(61,129,227,0.22)"
-          strokeWidth="1.5"
-          pointerEvents="none"
-        />
+        <circle cx={cx} cy={cy} r={radius} fill="none" stroke="rgba(61,129,227,0.22)" strokeWidth="1.5" pointerEvents="none" />
       </svg>
 
-      {/* Country tooltip */}
-      {hovered && hovered.name && (
-        <div
-          className="fixed z-50 pointer-events-none"
-          style={{ left: tooltipPos.x + 14, top: tooltipPos.y - 46 }}
-        >
+      {/* Tooltip */}
+      {tooltipContent && tooltipContent.name && (
+        <div className="fixed z-50 pointer-events-none" style={{ left: tooltipPos.x + 14, top: tooltipPos.y - 46 }}>
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#111418]/95 border border-white/[0.12] text-xs text-white/80 backdrop-blur-sm shadow-2xl whitespace-nowrap">
             <span className={`w-2 h-2 rounded-full flex-shrink-0 ${
-              hovered.visited ? 'bg-[#3D81E3]' : hovered.wishlist ? 'bg-amber-500' : 'bg-white/15'
+              tooltipContent.type === 'pin' ? 'bg-[#ff6b87]' :
+              tooltipContent.type === 'country' && tooltipContent.visited ? 'bg-[#3D81E3]' :
+              tooltipContent.type === 'country' && tooltipContent.wishlist ? 'bg-amber-500' :
+              'bg-white/15'
             }`} />
-            {hovered.name}
+            {tooltipContent.name}
           </div>
         </div>
       )}
 
-      {/* Hint */}
       <p className="absolute bottom-3 left-1/2 -translate-x-1/2 text-[9px] text-white/15 font-mono tracking-[0.25em] uppercase pointer-events-none">
         Drag to rotate
       </p>

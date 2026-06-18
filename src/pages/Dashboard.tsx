@@ -5,6 +5,7 @@ import { Plus, Globe2, Trash2, ChevronRight, X } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 import { Trip, WishlistEntry } from '../types'
+import { MemoryPin } from '../components/app/GlobeMap'
 import { COUNTRIES, Country, flagEmoji, fmtDate } from '../lib/countries'
 import { AppLayout } from '../components/app/AppLayout'
 import { GlobeMap } from '../components/app/GlobeMap'
@@ -15,6 +16,7 @@ export default function Dashboard() {
   const navigate = useNavigate()
   const [trips, setTrips] = useState<Trip[]>([])
   const [wishlist, setWishlist] = useState<WishlistEntry[]>([])
+  const [memoryPins, setMemoryPins] = useState<MemoryPin[]>([])
   const [loading, setLoading] = useState(true)
   const [showAdd, setShowAdd] = useState(false)
   const [mapClickedGeo, setMapClickedGeo] = useState<string | undefined>()
@@ -23,12 +25,18 @@ export default function Dashboard() {
 
   const fetchData = useCallback(async () => {
     if (!user) return
-    const [{ data: t }, { data: w }] = await Promise.all([
+    const [{ data: t }, { data: w }, { data: pins }] = await Promise.all([
       supabase.from('trips').select('*, memories(count)').eq('user_id', user.id).order('created_at', { ascending: false }),
       supabase.from('wishlist').select('*').eq('user_id', user.id).order('created_at', { ascending: false }),
+      supabase.from('memories').select('latitude, longitude, caption, location_name').eq('user_id', user.id).not('latitude', 'is', null),
     ])
     setTrips((t as Trip[]) ?? [])
     setWishlist((w as WishlistEntry[]) ?? [])
+    setMemoryPins(
+      ((pins ?? []) as { latitude: number; longitude: number; caption: string | null; location_name: string | null }[])
+        .filter(p => p.latitude && p.longitude)
+        .map(p => ({ lat: p.latitude, lng: p.longitude, label: p.caption || p.location_name || 'Memory' }))
+    )
     setLoading(false)
   }, [user])
 
@@ -135,6 +143,7 @@ export default function Dashboard() {
           visitedGeoNames={visitedGeoNames}
           wishlistGeoNames={wishlistGeoNames}
           onCountryClick={handleMapClick}
+          memoryPins={memoryPins}
         />
 
         {/* Country click panel */}
