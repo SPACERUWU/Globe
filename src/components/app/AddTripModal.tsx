@@ -4,6 +4,7 @@ import { X, Search } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../context/AuthContext'
 import { COUNTRIES, flagEmoji, Country } from '../../lib/countries'
+import { CITIES } from '../../lib/cities'
 
 interface Props {
   open: boolean
@@ -24,12 +25,18 @@ export function AddTripModal({ open, onClose, onCreated, prefillGeoName }: Props
   const [selectedCountry, setSelectedCountry] = useState<Country | null>(null)
   const [search, setSearch] = useState('')
   const [showDropdown, setShowDropdown] = useState(false)
+  const [showCityDropdown, setShowCityDropdown] = useState(false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const searchRef = useRef<HTMLInputElement>(null)
 
   const filtered = COUNTRIES.filter(c =>
     c.name.toLowerCase().includes(search.toLowerCase())
+  ).slice(0, 8)
+
+  const citiesForCountry = selectedCountry ? (CITIES[selectedCountry.code] ?? []) : []
+  const filteredCities = citiesForCountry.filter(c =>
+    c.toLowerCase().includes(city.toLowerCase())
   ).slice(0, 8)
 
   // Prefill country when user clicks a country on the map
@@ -133,7 +140,7 @@ export function AddTripModal({ open, onClose, onCreated, prefillGeoName }: Props
                       <button
                         key={c.code}
                         className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-white/70 hover:bg-white/[0.07] hover:text-white transition-colors text-left"
-                        onMouseDown={() => { setSelectedCountry(c); setSearch(c.name); setShowDropdown(false) }}
+                        onMouseDown={() => { setSelectedCountry(c); setSearch(c.name); setShowDropdown(false); setCity('') }}
                       >
                         <span className="text-base w-6">{flagEmoji(c.code)}</span>
                         {c.name}
@@ -144,12 +151,30 @@ export function AddTripModal({ open, onClose, onCreated, prefillGeoName }: Props
               </div>
 
               {/* City */}
-              <input
-                className={INPUT}
-                placeholder="City (optional)"
-                value={city}
-                onChange={e => setCity(e.target.value)}
-              />
+              <div className="relative">
+                <input
+                  className={`${INPUT} ${!selectedCountry ? 'opacity-40 cursor-not-allowed' : ''}`}
+                  placeholder={selectedCountry ? (citiesForCountry.length > 0 ? `City in ${selectedCountry.name}` : 'City (optional)') : 'Select a country first'}
+                  value={city}
+                  disabled={!selectedCountry}
+                  onChange={e => { setCity(e.target.value); setShowCityDropdown(true) }}
+                  onFocus={() => setShowCityDropdown(true)}
+                  onBlur={() => setTimeout(() => setShowCityDropdown(false), 150)}
+                />
+                {showCityDropdown && filteredCities.length > 0 && (
+                  <div className="absolute top-full left-0 right-0 mt-1.5 bg-[#151a21] border border-white/10 rounded-xl overflow-hidden z-20 shadow-xl max-h-48 overflow-y-auto">
+                    {filteredCities.map(c => (
+                      <button
+                        key={c}
+                        className="flex items-center w-full px-4 py-2.5 text-sm text-white/70 hover:bg-white/[0.07] hover:text-white transition-colors text-left"
+                        onMouseDown={() => { setCity(c); setShowCityDropdown(false) }}
+                      >
+                        {c}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
 
               {/* Dates */}
               <div className="grid grid-cols-2 gap-3">
