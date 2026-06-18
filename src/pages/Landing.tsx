@@ -3,7 +3,7 @@ import { motion } from 'motion/react'
 import { Globe2, Images, BookOpen, BarChart2, MapPin } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { LogoMark, gradientStyle } from '../components/Primitives'
-import { WorldMap } from '../components/app/WorldMap'
+import { GlobeMap } from '../components/app/GlobeMap'
 
 // Noise filter for shiny text
 function NoiseFilter() {
@@ -272,7 +272,7 @@ export default function Landing() {
           className="mx-4 md:mx-6 rounded-3xl overflow-hidden border border-white/[0.06]"
           style={{ height: 'min(50vh, 420px)', background: '#0a101a' }}
         >
-          <WorldMap
+          <GlobeMap
             visitedGeoNames={DEMO_VISITED}
             wishlistGeoNames={DEMO_WISHLIST}
           />

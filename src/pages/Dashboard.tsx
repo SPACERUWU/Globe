@@ -7,7 +7,7 @@ import { useAuth } from '../context/AuthContext'
 import { Trip, WishlistEntry } from '../types'
 import { COUNTRIES, Country, flagEmoji, fmtDate } from '../lib/countries'
 import { AppLayout } from '../components/app/AppLayout'
-import { WorldMap } from '../components/app/WorldMap'
+import { GlobeMap } from '../components/app/GlobeMap'
 import { AddTripModal } from '../components/app/AddTripModal'
 
 export default function Dashboard() {
@@ -131,7 +131,7 @@ export default function Dashboard() {
           ))}
         </div>
 
-        <WorldMap
+        <GlobeMap
           visitedGeoNames={visitedGeoNames}
           wishlistGeoNames={wishlistGeoNames}
           onCountryClick={handleMapClick}
