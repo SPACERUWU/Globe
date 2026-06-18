@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'motion/react'
-import { ArrowLeft, Plus, Pencil, MapPin, Utensils, Users, Sparkles, Trash2, Image as Img, ImagePlus, Share2, Copy, Check, Download } from 'lucide-react'
+import { ArrowLeft, Plus, Pencil, MapPin, Utensils, Users, Sparkles, Trash2, Image as Img, ImagePlus, Share2, Copy, Check, Download, X } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
-import { Trip, Memory } from '../types'
+import { Trip, Memory, TripMember } from '../types'
 import { flagEmoji, fmtDate } from '../lib/countries'
 import { AppLayout } from '../components/app/AppLayout'
 import { AddMemoryModal } from '../components/app/AddMemoryModal'
@@ -33,10 +33,15 @@ export default function TripDetail() {
   const [settingCover, setSettingCover] = useState<string | null>(null)
   const [filterCat, setFilterCat] = useState<string | null>(null)
   const [editingMemory, setEditingMemory] = useState<Memory | null>(null)
-  // Share
-  const [showShare, setShowShare] = useState(false)
+  // Share + Members panel
+  const [activePanel, setActivePanel] = useState<'share' | 'members' | null>(null)
   const [copied, setCopied] = useState(false)
   const [togglingPublic, setTogglingPublic] = useState(false)
+  // Collaboration
+  const [members, setMembers] = useState<TripMember[]>([])
+  const [inviteToken, setInviteToken] = useState<string | null>(null)
+  const [copyInvite, setCopyInvite] = useState(false)
+  const [generatingInvite, setGeneratingInvite] = useState(false)
   // Packing list
   const [showPacking, setShowPacking] = useState(false)
   // Lightbox
@@ -46,12 +51,14 @@ export default function TripDetail() {
 
   const fetchData = useCallback(async () => {
     if (!id || !user) return
-    const [{ data: t }, { data: m }] = await Promise.all([
-      supabase.from('trips').select('*').eq('id', id).eq('user_id', user.id).single(),
+    const [{ data: t }, { data: m }, { data: mb }] = await Promise.all([
+      supabase.from('trips').select('*').eq('id', id).single(),
       supabase.from('memories').select('*').eq('trip_id', id).order('memory_date', { ascending: false }),
+      supabase.from('trip_members').select('*').eq('trip_id', id),
     ])
     setTrip(t as Trip)
     setMemories((m as Memory[]) ?? [])
+    setMembers((mb as TripMember[]) ?? [])
     setLoading(false)
   }, [id, user])
 
@@ -92,6 +99,43 @@ export default function TripDetail() {
     await navigator.clipboard.writeText(`${window.location.origin}/share/${trip.public_slug}`)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
+  }
+
+  const memberColor = (uid: string) => {
+    const c = ['#3D81E3','#34d399','#f59e0b','#a78bfa','#f472b6','#00d2ff']
+    let h = 0
+    for (const ch of uid) h = (h * 31 + ch.charCodeAt(0)) & 0xffffffff
+    return c[Math.abs(h) % c.length]
+  }
+
+  const generateInvite = async () => {
+    if (!trip || generatingInvite) return
+    setGeneratingInvite(true)
+    // Reuse existing non-expired invite if available
+    const { data: existing } = await supabase
+      .from('trip_invites').select('token')
+      .eq('trip_id', trip.id)
+      .gt('expires_at', new Date().toISOString())
+      .order('created_at', { ascending: false })
+      .limit(1).maybeSingle()
+    if (existing) { setInviteToken(existing.token); setGeneratingInvite(false); return }
+    const { data } = await supabase
+      .from('trip_invites').insert({ trip_id: trip.id, created_by: user!.id }).select('token').single()
+    if (data) setInviteToken(data.token)
+    setGeneratingInvite(false)
+  }
+
+  const copyInviteLink = async () => {
+    if (!inviteToken) return
+    const base = window.location.href.split('#')[0]
+    await navigator.clipboard.writeText(`${base}#/join/${inviteToken}`)
+    setCopyInvite(true)
+    setTimeout(() => setCopyInvite(false), 2000)
+  }
+
+  const removeMember = async (memberId: string) => {
+    await supabase.from('trip_members').delete().eq('id', memberId)
+    setMembers(prev => prev.filter(m => m.id !== memberId))
   }
 
   const handleSetCover = async (photoUrl: string) => {
@@ -211,6 +255,7 @@ export default function TripDetail() {
 
   const todayStr = new Date().toISOString().slice(0, 10)
   const isUpcoming = !!trip.start_date && trip.start_date > todayStr
+  const isOwner = trip.user_id === user?.id
   const dateLine = [fmtDate(trip.start_date), fmtDate(trip.end_date)].filter(Boolean).join(' – ')
   const photoMemories = memories.filter(m => m.photo_url)
   const displayMemories = filterCat ? memories.filter(m => m.category === filterCat) : memories
@@ -238,6 +283,13 @@ export default function TripDetail() {
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
             <button
+              onClick={() => setActivePanel(p => p === 'members' ? null : 'members')}
+              className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${activePanel === 'members' ? 'bg-white/15 text-white' : 'bg-white/5 hover:bg-white/10 text-white/50'}`}
+              title="Collaborators"
+            >
+              <Users className="w-3.5 h-3.5" />
+            </button>
+            <button
               onClick={exportCard}
               className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors"
               title="Export trip card"
@@ -245,8 +297,8 @@ export default function TripDetail() {
               <Download className="w-3.5 h-3.5 text-white/50" />
             </button>
             <button
-              onClick={() => setShowShare(s => !s)}
-              className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${showShare ? 'bg-white/15 text-white' : 'bg-white/5 hover:bg-white/10 text-white/50'}`}
+              onClick={() => setActivePanel(p => p === 'share' ? null : 'share')}
+              className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${activePanel === 'share' ? 'bg-white/15 text-white' : 'bg-white/5 hover:bg-white/10 text-white/50'}`}
               title="Share trip"
             >
               <Share2 className="w-3.5 h-3.5" />
@@ -269,9 +321,9 @@ export default function TripDetail() {
           </div>
         </div>
 
-        {/* Share panel */}
+        {/* Panels */}
         <AnimatePresence>
-          {showShare && (
+          {activePanel === 'share' && (
             <motion.div
               initial={{ opacity: 0, y: -6, scale: 0.97 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -322,6 +374,93 @@ export default function TripDetail() {
               )}
             </motion.div>
           )}
+
+          {activePanel === 'members' && (
+            <motion.div
+              initial={{ opacity: 0, y: -6, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -4, scale: 0.97 }}
+              transition={{ duration: 0.15 }}
+              className="absolute top-full right-4 mt-2 w-80 bg-[#111418] border border-white/[0.12] rounded-2xl p-4 shadow-2xl z-30"
+            >
+              <p className="text-sm font-medium text-white mb-4">Collaborators</p>
+
+              {/* Owner row */}
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-8 h-8 rounded-full bg-[#3D81E3]/20 flex items-center justify-center text-xs font-bold text-[#3D81E3] flex-shrink-0">
+                  {user?.email?.[0].toUpperCase()}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs text-white/70 truncate">{user?.email}</p>
+                  <p className="text-[10px] text-white/30">Owner</p>
+                </div>
+              </div>
+
+              {/* Member rows */}
+              {members.map(m => (
+                <div key={m.id} className="flex items-center gap-3 mb-2 group">
+                  <div
+                    className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+                    style={{ background: memberColor(m.user_id) + '22', color: memberColor(m.user_id) }}
+                  >
+                    {(m.user_email ?? '?')[0].toUpperCase()}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs text-white/70 truncate">{m.user_email ?? 'Unknown'}</p>
+                    <p className="text-[10px] text-white/30">Editor</p>
+                  </div>
+                  {isOwner && (
+                    <button
+                      onClick={() => removeMember(m.id)}
+                      className="opacity-0 group-hover:opacity-100 text-white/25 hover:text-red-400 transition-all"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+              ))}
+
+              {members.length === 0 && (
+                <p className="text-[11px] text-white/25 mb-3">No collaborators yet</p>
+              )}
+
+              {/* Invite link — owner only */}
+              {isOwner && (
+                <div className="mt-3 pt-3 border-t border-white/[0.07]">
+                  {inviteToken ? (
+                    <>
+                      <div className="flex gap-2">
+                        <input
+                          readOnly
+                          value={`${window.location.href.split('#')[0]}#/join/${inviteToken}`}
+                          className="flex-1 min-w-0 bg-white/[0.04] border border-white/10 rounded-xl px-3 py-2 text-[10px] text-white/50 font-mono"
+                          onFocus={e => e.target.select()}
+                        />
+                        <button
+                          onClick={copyInviteLink}
+                          className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-all ${
+                            copyInvite ? 'bg-green-500/20 text-green-400' : 'bg-white/[0.06] hover:bg-white/[0.12] text-white/50'
+                          }`}
+                        >
+                          {copyInvite ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                        </button>
+                      </div>
+                      <p className="text-[10px] text-white/20 mt-2">Expires in 7 days · editor access</p>
+                    </>
+                  ) : (
+                    <button
+                      onClick={generateInvite}
+                      disabled={generatingInvite}
+                      className="w-full py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.10] text-xs text-white/60 hover:text-white transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                    >
+                      <Users className="w-3.5 h-3.5" />
+                      {generatingInvite ? 'Generating…' : 'Generate invite link'}
+                    </button>
+                  )}
+                </div>
+              )}
+            </motion.div>
+          )}
         </AnimatePresence>
       </div>
 
@@ -356,6 +495,33 @@ export default function TripDetail() {
           </div>
         )}
       </div>
+
+      {/* Collaborators strip */}
+      {members.length > 0 && (
+        <div className="px-5 py-2.5 border-b border-white/[0.04] flex items-center gap-3">
+          <div className="flex -space-x-1.5">
+            <div
+              className="w-6 h-6 rounded-full bg-[#3D81E3]/20 border-2 border-[#0c0c0c] flex items-center justify-center text-[9px] font-bold text-[#3D81E3]"
+              title={user?.email}
+            >
+              {user?.email?.[0].toUpperCase()}
+            </div>
+            {members.slice(0, 5).map(m => (
+              <div
+                key={m.id}
+                className="w-6 h-6 rounded-full border-2 border-[#0c0c0c] flex items-center justify-center text-[9px] font-bold"
+                style={{ background: memberColor(m.user_id) + '33', color: memberColor(m.user_id) }}
+                title={m.user_email ?? undefined}
+              >
+                {(m.user_email ?? '?')[0].toUpperCase()}
+              </div>
+            ))}
+          </div>
+          <span className="text-[11px] text-white/30">
+            {members.length} collaborator{members.length !== 1 ? 's' : ''}
+          </span>
+        </div>
+      )}
 
       {/* Packing list — upcoming trips only */}
       {isUpcoming && (

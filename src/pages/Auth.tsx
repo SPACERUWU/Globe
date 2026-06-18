@@ -21,7 +21,16 @@ export default function Auth() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
 
-  useEffect(() => { if (user) navigate('/app', { replace: true }) }, [user, navigate])
+  useEffect(() => {
+    if (!user) return
+    const pendingJoin = sessionStorage.getItem('pendingJoin')
+    if (pendingJoin) {
+      sessionStorage.removeItem('pendingJoin')
+      navigate(`/join/${pendingJoin}`, { replace: true })
+    } else {
+      navigate('/app', { replace: true })
+    }
+  }, [user, navigate])
 
   const friendly = (msg: string) => {
     if (msg.includes('Invalid login')) return 'Incorrect email or password.'
@@ -46,7 +55,13 @@ export default function Auth() {
       const { error: err } = await supabase.auth.signInWithPassword({ email, password })
       setLoading(false)
       if (err) { setError(friendly(err.message)); return }
-      navigate('/app', { replace: true })
+      const pendingJoin = sessionStorage.getItem('pendingJoin')
+      if (pendingJoin) {
+        sessionStorage.removeItem('pendingJoin')
+        navigate(`/join/${pendingJoin}`, { replace: true })
+      } else {
+        navigate('/app', { replace: true })
+      }
     }
   }
 

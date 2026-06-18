@@ -40,6 +40,15 @@ export interface WishlistEntry {
   created_at: string
 }
 
+export interface TripMember {
+  id: string
+  trip_id: string
+  user_id: string
+  role: string
+  user_email: string | null
+  created_at: string
+}
+
 export interface PackingItem {
   id: string
   trip_id: string

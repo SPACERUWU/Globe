@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'motion/react'
-import { Plus, Globe2, Trash2, ChevronRight, X } from 'lucide-react'
+import { Plus, Globe2, Trash2, ChevronRight, X, Users } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 import { Trip, WishlistEntry } from '../types'
@@ -15,6 +15,7 @@ export default function Dashboard() {
   const { user } = useAuth()
   const navigate = useNavigate()
   const [trips, setTrips] = useState<Trip[]>([])
+  const [sharedTrips, setSharedTrips] = useState<Trip[]>([])
   const [wishlist, setWishlist] = useState<WishlistEntry[]>([])
   const [memoryPins, setMemoryPins] = useState<MemoryPin[]>([])
   const [loading, setLoading] = useState(true)
@@ -25,13 +26,22 @@ export default function Dashboard() {
 
   const fetchData = useCallback(async () => {
     if (!user) return
-    const [{ data: t }, { data: w }, { data: pins }] = await Promise.all([
+    const [{ data: t }, { data: w }, { data: pins }, { data: memberships }] = await Promise.all([
       supabase.from('trips').select('*, memories(count)').eq('user_id', user.id).order('created_at', { ascending: false }),
       supabase.from('wishlist').select('*').eq('user_id', user.id).order('created_at', { ascending: false }),
       supabase.from('memories').select('latitude, longitude, caption, location_name').eq('user_id', user.id).not('latitude', 'is', null),
+      supabase.from('trip_members').select('trip_id').eq('user_id', user.id),
     ])
     setTrips((t as Trip[]) ?? [])
     setWishlist((w as WishlistEntry[]) ?? [])
+
+    // Fetch trips shared with this user
+    const sharedIds = (memberships ?? []).map((m: { trip_id: string }) => m.trip_id)
+    if (sharedIds.length > 0) {
+      const { data: shared } = await supabase
+        .from('trips').select('*, memories(count)').in('id', sharedIds)
+      setSharedTrips((shared as Trip[]) ?? [])
+    }
     setMemoryPins(
       ((pins ?? []) as { latitude: number; longitude: number; caption: string | null; location_name: string | null }[])
         .filter(p => p.latitude && p.longitude)
@@ -71,7 +81,7 @@ export default function Dashboard() {
     }
   }
 
-  const visitedGeoNames = [...new Set(trips.map(t => t.country_geo))]
+  const visitedGeoNames = [...new Set([...trips, ...sharedTrips].map(t => t.country_geo))]
   const wishlistGeoNames = wishlist.map(w => w.country_geo)
   const uniqueCountries = new Set(trips.map(t => t.country_code)).size
   const totalMemories = trips.reduce((n, t) => n + (t.memories?.[0]?.count ?? 0), 0)
@@ -352,6 +362,49 @@ export default function Dashboard() {
           </div>
         )}
       </div>
+
+      {/* Shared with me */}
+      {!loading && sharedTrips.length > 0 && (
+        <div className="px-6 pb-6">
+          <div className="flex items-center gap-2 mb-4">
+            <h2 className="text-sm font-semibold text-white">Shared with you</h2>
+            <span className="px-2 py-0.5 rounded-full bg-[#3D81E3]/15 border border-[#3D81E3]/20 text-[10px] font-semibold text-[#3D81E3]">
+              {sharedTrips.length}
+            </span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {sharedTrips.map((trip, i) => (
+              <motion.div
+                key={trip.id}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.05 }}
+                className="group relative rounded-2xl overflow-hidden cursor-pointer h-40"
+                onClick={() => navigate(`/app/trips/${trip.id}`)}
+              >
+                {trip.cover_photo_url ? (
+                  <div className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+                    style={{ backgroundImage: `url(${trip.cover_photo_url})` }} />
+                ) : (
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#1a0d2e] to-[#0a0a18]" />
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-black/0" />
+                <div className="absolute inset-0 rounded-2xl border border-white/10" />
+                {/* Shared badge */}
+                <div className="absolute top-3 right-3 px-2 py-1 rounded-lg bg-[#3D81E3]/20 border border-[#3D81E3]/30 text-[9px] font-semibold text-[#3D81E3] flex items-center gap-1">
+                  <Users className="w-2.5 h-2.5" /> Shared
+                </div>
+                <div className="relative z-10 p-4 flex flex-col h-full justify-end">
+                  <span className="text-xl leading-none mb-1.5">{flagEmoji(trip.country_code)}</span>
+                  <p className="text-xs text-white/50 mb-0.5">{trip.country_name}</p>
+                  <p className="text-sm font-semibold text-white leading-tight truncate">{trip.title}</p>
+                  <p className="text-[10px] text-white/35 mt-1">{trip.memories?.[0]?.count ?? 0} memories</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Wishlist section */}
       {!loading && wishlist.length > 0 && (

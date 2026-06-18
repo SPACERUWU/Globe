@@ -12,6 +12,7 @@ import Feed from './pages/Feed'
 import Passport from './pages/Passport'
 import Settings from './pages/Settings'
 import ShareView from './pages/ShareView'
+import JoinTrip from './pages/JoinTrip'
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
         <ClickSpark sparkColor="#ffffff" sparkSize={10} sparkRadius={15} sparkCount={8} duration={500} easing="ease-out" extraScale={1} />
         <Routes>
           <Route path="/share/:slug"     element={<ShareView />} />
+          <Route path="/join/:token"     element={<JoinTrip />} />
           <Route path="/"                element={<Landing />} />
           <Route path="/auth"            element={<Auth />} />
           <Route path="/app"             element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
