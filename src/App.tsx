@@ -1,5 +1,6 @@
 import { HashRouter as BrowserRouter, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
+import { ClickSpark } from './components/ClickSpark'
 import { ProtectedRoute } from './components/app/ProtectedRoute'
 import Landing from './pages/Landing'
 import Auth from './pages/Auth'
@@ -16,6 +17,7 @@ export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
+        <ClickSpark sparkColor="#ffffff" sparkSize={10} sparkRadius={15} sparkCount={8} duration={500} easing="ease-out" extraScale={1} />
         <Routes>
           <Route path="/share/:slug"     element={<ShareView />} />
           <Route path="/"                element={<Landing />} />
