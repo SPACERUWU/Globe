@@ -96,7 +96,8 @@ export default function TripDetail() {
 
   const copyShareLink = async () => {
     if (!trip?.public_slug) return
-    await navigator.clipboard.writeText(`${window.location.origin}/share/${trip.public_slug}`)
+    const base = window.location.href.split('#')[0]
+    await navigator.clipboard.writeText(`${base}#/share/${trip.public_slug}`)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }

@@ -50,7 +50,7 @@ export default function Auth() {
       const { error: err } = await supabase.auth.signUp({ email, password })
       setLoading(false)
       if (err) { setError(friendly(err.message)); return }
-      setSuccess('Check your email to confirm your account, then sign in.')
+      setSuccess('Account created! Signing you in…')
     } else {
       const { error: err } = await supabase.auth.signInWithPassword({ email, password })
       setLoading(false)
