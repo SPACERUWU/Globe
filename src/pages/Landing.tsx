@@ -1,9 +1,57 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'motion/react'
-import { Globe2, Images, BookOpen, BarChart2, MapPin, Share2, Search, ArrowRight } from 'lucide-react'
+import { Globe2, Images, Users, MapPin, ArrowRight } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { LogoMark, gradientStyle } from '../components/Primitives'
 import { GlobeMap } from '../components/app/GlobeMap'
+
+interface FeatureCardProps {
+  title: string
+  description: string
+  icon: LucideIcon
+  gradient: string
+  delay: number
+}
+
+function FeatureCard({ title, description, icon: Icon, gradient, delay }: FeatureCardProps) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.8, ease: 'easeOut', delay }}
+      className="relative flex flex-col justify-start items-start w-full max-w-[260px] md:max-w-[300px] group mx-auto"
+    >
+      {/* Glow background */}
+      <div
+        className="absolute inset-0 w-full h-[260px] md:h-[300px] opacity-60 rounded-[40px] pointer-events-none"
+        style={{ background: gradient, filter: 'blur(45px)' }}
+      />
+
+      {/* Card with gradient border */}
+      <div
+        className="relative self-stretch h-[260px] md:h-[300px] rounded-[40px] z-10 overflow-hidden"
+        style={{
+          border: '8px solid transparent',
+          background: `linear-gradient(#1A1A1C, #1A1A1C) padding-box, ${gradient} border-box`,
+        }}
+      >
+        <div className="w-full h-full p-7 flex flex-col justify-between">
+          <div className="text-white/90">
+            <Icon size={32} strokeWidth={2.5} />
+          </div>
+          <div>
+            <h3 className="text-white font-medium text-xl mb-3 tracking-tight">{title}</h3>
+            <p className="text-gray-400 text-[14px] leading-[1.6] font-normal selection:bg-white/20">
+              {description}
+            </p>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  )
+}
 
 function NoiseFilter() {
   return (
@@ -28,13 +76,28 @@ const DEMO_VISITED = [
 ]
 const DEMO_WISHLIST = ['New Zealand', 'Iceland', 'Peru', 'Kenya', 'Jordan', 'Norway']
 
-const FEATURES = [
-  { icon: Globe2,   label: 'World Map',       desc: 'Every country you visit lights up. Drag the globe, click a country, explore your history.',  color: '#3D81E3' },
-  { icon: Images,   label: 'Memory Journal',  desc: 'Photos, captions, moments — organized by trip in a beautiful timeline feed.',                  color: '#00d2ff' },
-  { icon: BookOpen, label: 'Passport Stamps', desc: 'Collect a stamp for every country. Watch your passport fill up.',                              color: '#a78bfa' },
-  { icon: BarChart2,label: 'Journey Stats',   desc: 'Countries, continents, memories — filtered by year. See how far you have come.',               color: '#f59e0b' },
-  { icon: Share2,   label: 'Share Trips',     desc: 'Generate a public link and share any trip with anyone — no account needed.',                   color: '#34d399' },
-  { icon: Search,   label: 'Quick Search',    desc: 'Cmd + K to instantly find any trip or memory across your entire journal.',                     color: '#f472b6' },
+const FEATURE_CARDS = [
+  {
+    title: 'World Map',
+    description: 'Every country you visit lights up on a 3D globe. Drag, spin, and explore your entire travel history at a glance.',
+    icon: Globe2,
+    gradient: 'linear-gradient(137deg, #FF3D77 0%, #FFB1CE 45%, #FF9D3C 100%)',
+    delay: 0.1,
+  },
+  {
+    title: 'Memory Journal',
+    description: 'Photos, captions, moments — captured in a beautiful timeline. Every trip becomes a story worth keeping.',
+    icon: Images,
+    gradient: 'linear-gradient(137deg, #FFFFFF 0%, #7DD3FC 45%, #06B6D4 100%)',
+    delay: 0.2,
+  },
+  {
+    title: 'Travel Together',
+    description: 'Invite friends to co-build a trip. Share invite links and plan your next adventure as a team in real time.',
+    icon: Users,
+    gradient: 'linear-gradient(137deg, #4361EE 0%, #E0AEFF 45%, #F72585 100%)',
+    delay: 0.3,
+  },
 ]
 
 const DEMO_TRIPS = [
@@ -294,25 +357,9 @@ export default function Landing() {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {FEATURES.map(({ icon: Icon, label, desc, color }, i) => (
-              <motion.div
-                key={label}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.07 }}
-                className="group p-6 rounded-2xl border border-white/[0.07] bg-white/[0.02] hover:bg-white/[0.04] hover:border-white/[0.12] transition-all duration-300"
-              >
-                <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center mb-4"
-                  style={{ background: `${color}18` }}
-                >
-                  <Icon className="w-5 h-5" style={{ color }} />
-                </div>
-                <h3 className="text-sm font-semibold text-white mb-2">{label}</h3>
-                <p className="text-xs text-white/40 leading-relaxed">{desc}</p>
-              </motion.div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-3 lg:gap-3 w-full max-w-[936px] mx-auto">
+            {FEATURE_CARDS.map(card => (
+              <FeatureCard key={card.title} {...card} />
             ))}
           </div>
         </div>
