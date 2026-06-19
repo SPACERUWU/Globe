@@ -14,6 +14,11 @@ html, body {
   background-color: rgba(61, 129, 227, 0.3);
 }
 
+/* 404 glow */
+.four-oh-four {
+  text-shadow: 0 0 80px rgba(255,255,255,0.3), 0 0 160px rgba(255,255,255,0.1);
+}
+
 /* Shiny headline animation */
 @keyframes shiny {
   0% { background-position: -200% center; }

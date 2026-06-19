@@ -13,6 +13,7 @@ import Passport from './pages/Passport'
 import Settings from './pages/Settings'
 import ShareView from './pages/ShareView'
 import JoinTrip from './pages/JoinTrip'
+import NotFound from './pages/NotFound'
 
 export default function App() {
   return (
@@ -31,6 +32,7 @@ export default function App() {
           <Route path="/app/stats"       element={<ProtectedRoute><Stats /></ProtectedRoute>} />
           <Route path="/app/passport"    element={<ProtectedRoute><Passport /></ProtectedRoute>} />
           <Route path="/app/settings"    element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+          <Route path="*"               element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
