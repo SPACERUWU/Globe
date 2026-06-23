@@ -102,7 +102,7 @@ const FEATURE_CARDS = [
 
 const DEMO_TRIPS = [
   { flag: '🇯🇵', country: 'Japan',       title: 'Cherry Blossom Season', mems: 14, bg: 'from-[#1a0a1e] to-[#2a0d30]' },
-  { flag: '🇫🇷', country: 'France',      title: 'Paris in December',     mems: 9,  bg: 'from-[#091020] to-[#0d2040]' },
+  { flag: '🇫🇷', country: 'France',      title: 'Paris in December',     mems: 9,  bg: 'from-[#090909] to-[#0d2040]' },
   { flag: '🇹🇭', country: 'Thailand',    title: 'Island Hopping',        mems: 22, bg: 'from-[#051a10] to-[#0a2518]' },
   { flag: '🇮🇹', country: 'Italy',       title: 'Rome & Amalfi Coast',   mems: 17, bg: 'from-[#1a1000] to-[#251800]' },
 ]
@@ -111,13 +111,13 @@ export default function Landing() {
   const { user } = useAuth()
 
   return (
-    <div className="min-h-screen bg-[#030711] text-white overflow-x-hidden">
+    <div className="min-h-screen bg-[#020202] text-white overflow-x-hidden">
       <NoiseFilter />
 
       {/* ── Background glow ── */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[600px] rounded-full opacity-20"
-          style={{ background: 'radial-gradient(ellipse at center, #1a4a9a 0%, transparent 70%)' }} />
+          style={{ background: 'radial-gradient(ellipse at center, #1a3d52 0%, transparent 70%)' }} />
       </div>
 
       {/* ════════════════ NAV ════════════════ */}
@@ -167,7 +167,7 @@ export default function Landing() {
             transition={{ duration: 0.5 }}
             className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/[0.12] bg-white/[0.04] text-xs text-white/50 mb-8"
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-[#3D81E3] animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[#B2D5E5] animate-pulse" />
             Personal travel journal
           </motion.div>
 
@@ -225,12 +225,12 @@ export default function Landing() {
         >
           {/* Glow beneath globe */}
           <div className="absolute inset-0 rounded-full opacity-30"
-            style={{ background: 'radial-gradient(circle, #1a4a9a 0%, transparent 65%)', transform: 'scale(0.7) translateY(10%)' }} />
+            style={{ background: 'radial-gradient(circle, #1a3d52 0%, transparent 65%)', transform: 'scale(0.7) translateY(10%)' }} />
           <GlobeMap visitedGeoNames={DEMO_VISITED} wishlistGeoNames={DEMO_WISHLIST} />
 
           {/* Fade to bg at bottom */}
           <div className="absolute bottom-0 left-0 right-0 h-40 pointer-events-none"
-            style={{ background: 'linear-gradient(to top, #030711 0%, transparent 100%)' }} />
+            style={{ background: 'linear-gradient(to top, #020202 0%, transparent 100%)' }} />
         </motion.div>
       </section>
 
@@ -261,7 +261,7 @@ export default function Landing() {
       <section className="relative z-10 py-24 px-6">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
-            <p className="text-xs font-semibold text-[#3D81E3] uppercase tracking-widest mb-3">The app</p>
+            <p className="text-xs font-semibold text-[#B2D5E5] uppercase tracking-widest mb-3">The app</p>
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
               Everything in one place
             </h2>
@@ -351,7 +351,7 @@ export default function Landing() {
       <section className="relative z-10 py-24 px-6 border-t border-white/[0.05]">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-16">
-            <p className="text-xs font-semibold text-[#3D81E3] uppercase tracking-widest mb-3">Features</p>
+            <p className="text-xs font-semibold text-[#B2D5E5] uppercase tracking-widest mb-3">Features</p>
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
               Built for travelers, not spreadsheets
             </h2>
@@ -370,7 +370,7 @@ export default function Landing() {
         {/* Glow */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <div className="w-[600px] h-[300px] rounded-full opacity-15"
-            style={{ background: 'radial-gradient(ellipse, #1a4a9a 0%, transparent 70%)' }} />
+            style={{ background: 'radial-gradient(ellipse, #1a3d52 0%, transparent 70%)' }} />
         </div>
 
         <div className="relative max-w-3xl mx-auto text-center">

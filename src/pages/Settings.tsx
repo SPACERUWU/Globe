@@ -112,7 +112,7 @@ export default function Settings() {
 
   return (
     <AppLayout>
-      <div className="sticky top-0 z-20 bg-[#0c0c0c]/80 backdrop-blur-md border-b border-white/[0.06] px-6 py-4">
+      <div className="sticky top-0 z-20 bg-[#020202]/80 backdrop-blur-md border-b border-white/[0.06] px-6 py-4">
         <h1 className="text-sm font-semibold text-white">Settings</h1>
         <p className="text-xs text-white/40 mt-0.5">{user?.email}</p>
       </div>
@@ -134,7 +134,7 @@ export default function Settings() {
                   className="w-20 h-20 rounded-full object-cover ring-2 ring-white/10 group-hover:ring-white/25 transition-all"
                 />
               ) : (
-                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#3D81E3] to-[#0B2551] flex items-center justify-center text-2xl font-bold ring-2 ring-white/10 group-hover:ring-white/25 transition-all">
+                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#B2D5E5] to-[#0a1a24] flex items-center justify-center text-2xl font-bold ring-2 ring-white/10 group-hover:ring-white/25 transition-all">
                   {avatarUploading ? (
                     <div className="w-6 h-6 rounded-full border-2 border-white/20 border-t-white animate-spin" />
                   ) : initials}
@@ -158,7 +158,7 @@ export default function Settings() {
               <button
                 onClick={() => avatarRef.current?.click()}
                 disabled={avatarUploading}
-                className="text-xs text-[#3D81E3] hover:text-[#6aa3f5] mt-2 transition-colors disabled:opacity-40"
+                className="text-xs text-[#B2D5E5] hover:text-[#c8e5ef] mt-2 transition-colors disabled:opacity-40"
               >
                 {avatarUploading ? 'Uploading…' : 'Change photo'}
               </button>

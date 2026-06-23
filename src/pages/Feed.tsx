@@ -8,8 +8,8 @@ import { flagEmoji, fmtDate } from '../lib/countries'
 import { AppLayout } from '../components/app/AppLayout'
 
 const CATEGORY_META: Record<string, { icon: typeof MapPin; color: string; bg: string }> = {
-  place:  { icon: MapPin,   color: '#00d2ff', bg: 'bg-[#00d2ff]/10' },
-  moment: { icon: Sparkles, color: '#A4F4FD', bg: 'bg-[#A4F4FD]/10' },
+  place:  { icon: MapPin,   color: '#B2D5E5', bg: 'bg-[#B2D5E5]/10' },
+  moment: { icon: Sparkles, color: '#B2D5E5', bg: 'bg-[#B2D5E5]/10' },
   food:   { icon: Utensils, color: '#f59e0b', bg: 'bg-amber-500/10'  },
   people: { icon: Users,    color: '#a78bfa', bg: 'bg-violet-400/10' },
 }
@@ -62,7 +62,7 @@ export default function Feed() {
 
   return (
     <AppLayout>
-      <div className="sticky top-0 z-20 bg-[#0c0c0c]/80 backdrop-blur-md border-b border-white/[0.06] px-6 py-4">
+      <div className="sticky top-0 z-20 bg-[#020202]/80 backdrop-blur-md border-b border-white/[0.06] px-6 py-4">
         <h1 className="text-sm font-semibold text-white">Memory Feed</h1>
         <p className="text-xs text-white/40 mt-0.5">All your travel memories, chronologically</p>
       </div>

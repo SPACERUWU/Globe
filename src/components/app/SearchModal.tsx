@@ -7,7 +7,7 @@ import { useAuth } from '../../context/AuthContext'
 import { flagEmoji, fmtDate } from '../../lib/countries'
 
 const CAT_COLOR: Record<string, string> = {
-  place: '#00d2ff', moment: '#A4F4FD', food: '#f59e0b', people: '#a78bfa',
+  place: '#B2D5E5', moment: '#B2D5E5', food: '#f59e0b', people: '#a78bfa',
 }
 const CAT_ICON: Record<string, typeof MapPin> = {
   place: MapPin, moment: Sparkles, food: Utensils, people: Users,
@@ -152,7 +152,7 @@ export function SearchModal({ onClose }: Props) {
                   <p className="px-4 pt-4 pb-1 text-[10px] font-semibold text-white/25 uppercase tracking-widest">Memories</p>
                   {mems.map(m => {
                     const Icon = CAT_ICON[m.category] ?? Sparkles
-                    const color = CAT_COLOR[m.category] ?? '#A4F4FD'
+                    const color = CAT_COLOR[m.category] ?? '#B2D5E5'
                     return (
                       <button
                         key={m.id}

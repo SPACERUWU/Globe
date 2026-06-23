@@ -8,8 +8,8 @@ import { flagEmoji, fmtDate } from '../lib/countries'
 import { LogoMark } from '../components/Primitives'
 
 const CATEGORY_META: Record<string, { icon: typeof MapPin; color: string }> = {
-  place:  { icon: MapPin,   color: '#00d2ff' },
-  moment: { icon: Sparkles, color: '#A4F4FD' },
+  place:  { icon: MapPin,   color: '#B2D5E5' },
+  moment: { icon: Sparkles, color: '#B2D5E5' },
   food:   { icon: Utensils, color: '#f59e0b' },
   people: { icon: Users,    color: '#a78bfa' },
 }
@@ -44,17 +44,17 @@ export default function ShareView() {
   }, [slug])
 
   if (loading) return (
-    <div className="min-h-screen bg-[#0c0c0c] flex items-center justify-center">
+    <div className="min-h-screen bg-[#020202] flex items-center justify-center">
       <div className="w-6 h-6 rounded-full border-2 border-white/20 border-t-white/70 animate-spin" />
     </div>
   )
 
   if (notFound || !trip) return (
-    <div className="min-h-screen bg-[#0c0c0c] flex flex-col items-center justify-center text-white gap-3">
+    <div className="min-h-screen bg-[#020202] flex flex-col items-center justify-center text-white gap-3">
       <Globe2 className="w-12 h-12 text-white/10" />
       <p className="text-sm text-white/50">This trip isn't available</p>
       <p className="text-xs text-white/30">The link may have expired or the trip was made private.</p>
-      <a href="/" className="mt-4 text-xs text-[#3D81E3] hover:text-[#6aa3f5] transition-colors">
+      <a href="/" className="mt-4 text-xs text-[#B2D5E5] hover:text-[#c8e5ef] transition-colors">
         Go to Globe →
       </a>
     </div>
@@ -64,9 +64,9 @@ export default function ShareView() {
   const photoCount = memories.filter(m => m.photo_url).length
 
   return (
-    <div className="min-h-screen bg-[#0c0c0c] text-white">
+    <div className="min-h-screen bg-[#020202] text-white">
       {/* Top bar */}
-      <div className="sticky top-0 z-20 bg-[#0c0c0c]/80 backdrop-blur-md border-b border-white/[0.06] px-6 py-3 flex items-center justify-between">
+      <div className="sticky top-0 z-20 bg-[#020202]/80 backdrop-blur-md border-b border-white/[0.06] px-6 py-3 flex items-center justify-between">
         <a href="/" className="flex items-center gap-2 text-white/50 hover:text-white transition-colors">
           <LogoMark className="w-5 h-5" />
           <span className="text-sm font-medium">Globe</span>
@@ -90,7 +90,7 @@ export default function ShareView() {
             </div>
           </div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c0c] via-[#0c0c0c]/20 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#020202] via-[#020202]/20 to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 px-6 pb-6 max-w-4xl mx-auto">
           <div className="flex items-end gap-4 mb-2">
             <span className="text-5xl leading-none">{flagEmoji(trip.country_code)}</span>

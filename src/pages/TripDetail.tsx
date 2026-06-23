@@ -14,8 +14,8 @@ import { PhotoLightbox, LightboxPhoto } from '../components/app/PhotoLightbox'
 import { PackingList } from '../components/app/PackingList'
 
 const CATEGORY_META: Record<string, { icon: typeof MapPin; color: string; bg: string }> = {
-  place:  { icon: MapPin,   color: '#00d2ff', bg: 'bg-[#00d2ff]/10' },
-  moment: { icon: Sparkles, color: '#A4F4FD', bg: 'bg-[#A4F4FD]/10' },
+  place:  { icon: MapPin,   color: '#B2D5E5', bg: 'bg-[#B2D5E5]/10' },
+  moment: { icon: Sparkles, color: '#B2D5E5', bg: 'bg-[#B2D5E5]/10' },
   food:   { icon: Utensils, color: '#f59e0b', bg: 'bg-amber-500/10'  },
   people: { icon: Users,    color: '#a78bfa', bg: 'bg-violet-400/10' },
 }
@@ -103,7 +103,7 @@ export default function TripDetail() {
   }
 
   const memberColor = (uid: string) => {
-    const c = ['#3D81E3','#34d399','#f59e0b','#a78bfa','#f472b6','#00d2ff']
+    const c = ['#B2D5E5','#34d399','#f59e0b','#a78bfa','#f472b6','#B2D5E5']
     let h = 0
     for (const ch of uid) h = (h * 31 + ch.charCodeAt(0)) & 0xffffffff
     return c[Math.abs(h) % c.length]
@@ -170,13 +170,13 @@ export default function TripDetail() {
     // Background gradient
     const bg = ctx.createLinearGradient(0, 0, 0, H)
     bg.addColorStop(0, '#0d1f3c')
-    bg.addColorStop(1, '#030711')
+    bg.addColorStop(1, '#020202')
     ctx.fillStyle = bg
     ctx.fillRect(0, 0, W, H)
 
     // Blue glow
     const glow = ctx.createRadialGradient(W / 2, H * 0.35, 0, W / 2, H * 0.35, 420)
-    glow.addColorStop(0, 'rgba(61,129,227,0.14)')
+    glow.addColorStop(0, 'rgba(178,213,229,0.14)')
     glow.addColorStop(1, 'transparent')
     ctx.fillStyle = glow
     ctx.fillRect(0, 0, W, H)
@@ -270,7 +270,7 @@ export default function TripDetail() {
   return (
     <AppLayout>
       {/* Sticky header */}
-      <div className="sticky top-0 z-20 bg-[#0c0c0c]/80 backdrop-blur-md border-b border-white/[0.06] px-4 py-3 relative">
+      <div className="sticky top-0 z-20 bg-[#020202]/80 backdrop-blur-md border-b border-white/[0.06] px-4 py-3 relative">
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate(-1)}
@@ -341,7 +341,7 @@ export default function TripDetail() {
                 <button
                   onClick={togglePublic}
                   disabled={togglingPublic}
-                  className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 disabled:opacity-60 ${trip.is_public ? 'bg-[#3D81E3]' : 'bg-white/10'}`}
+                  className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 disabled:opacity-60 ${trip.is_public ? 'bg-[#B2D5E5]' : 'bg-white/10'}`}
                 >
                   <motion.div
                     className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow"
@@ -388,7 +388,7 @@ export default function TripDetail() {
 
               {/* Owner row */}
               <div className="flex items-center gap-3 mb-2">
-                <div className="w-8 h-8 rounded-full bg-[#3D81E3]/20 flex items-center justify-center text-xs font-bold text-[#3D81E3] flex-shrink-0">
+                <div className="w-8 h-8 rounded-full bg-[#B2D5E5]/20 flex items-center justify-center text-xs font-bold text-[#B2D5E5] flex-shrink-0">
                   {user?.email?.[0].toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -476,7 +476,7 @@ export default function TripDetail() {
             </div>
           </div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c0c] via-[#0c0c0c]/30 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#020202] via-[#020202]/30 to-transparent" />
 
         <div className="absolute bottom-0 left-0 right-0 px-6 pb-5">
           <p className="text-xs text-white/50 mb-1">
@@ -502,7 +502,7 @@ export default function TripDetail() {
         <div className="px-5 py-2.5 border-b border-white/[0.04] flex items-center gap-3">
           <div className="flex -space-x-1.5">
             <div
-              className="w-6 h-6 rounded-full bg-[#3D81E3]/20 border-2 border-[#0c0c0c] flex items-center justify-center text-[9px] font-bold text-[#3D81E3]"
+              className="w-6 h-6 rounded-full bg-[#B2D5E5]/20 border-2 border-[#020202] flex items-center justify-center text-[9px] font-bold text-[#B2D5E5]"
               title={user?.email}
             >
               {user?.email?.[0].toUpperCase()}
@@ -510,7 +510,7 @@ export default function TripDetail() {
             {members.slice(0, 5).map(m => (
               <div
                 key={m.id}
-                className="w-6 h-6 rounded-full border-2 border-[#0c0c0c] flex items-center justify-center text-[9px] font-bold"
+                className="w-6 h-6 rounded-full border-2 border-[#020202] flex items-center justify-center text-[9px] font-bold"
                 style={{ background: memberColor(m.user_id) + '33', color: memberColor(m.user_id) }}
                 title={m.user_email ?? undefined}
               >

@@ -76,7 +76,7 @@ export default function Stats() {
 
   return (
     <AppLayout>
-      <div className="sticky top-0 z-20 bg-[#0c0c0c]/80 backdrop-blur-md border-b border-white/[0.06] px-6 py-4">
+      <div className="sticky top-0 z-20 bg-[#020202]/80 backdrop-blur-md border-b border-white/[0.06] px-6 py-4">
         <div className="flex items-start justify-between gap-4">
           <div>
             <h1 className="text-sm font-semibold text-white">Journey Stats</h1>
@@ -165,7 +165,7 @@ export default function Stats() {
                           }`}
                         >
                           <div className="flex items-center gap-3">
-                            <span className={`w-2 h-2 rounded-full flex-shrink-0 ${visited ? 'bg-[#3D81E3]' : 'bg-white/10'}`} />
+                            <span className={`w-2 h-2 rounded-full flex-shrink-0 ${visited ? 'bg-[#B2D5E5]' : 'bg-white/10'}`} />
                             <span className={`text-sm ${visited ? 'text-white' : 'text-white/30'}`}>{cont}</span>
                           </div>
                           <span className={`text-xs ${visited ? 'text-white/40' : 'text-white/20'}`}>

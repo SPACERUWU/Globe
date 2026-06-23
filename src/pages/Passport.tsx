@@ -65,7 +65,7 @@ export default function Passport() {
 
   return (
     <AppLayout>
-      <div className="sticky top-0 z-20 bg-[#0c0c0c]/80 backdrop-blur-md border-b border-white/[0.06] px-6 py-4">
+      <div className="sticky top-0 z-20 bg-[#020202]/80 backdrop-blur-md border-b border-white/[0.06] px-6 py-4">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-sm font-semibold text-white">Passport</h1>
@@ -119,12 +119,12 @@ export default function Passport() {
                     {/* Perforation dots (top + bottom) */}
                     <div className="absolute top-0 left-0 right-0 h-px flex justify-between px-1 pointer-events-none">
                       {[...Array(8)].map((_, j) => (
-                        <span key={j} className="w-1 h-1 rounded-full bg-[#0c0c0c] mt-[-2px]" />
+                        <span key={j} className="w-1 h-1 rounded-full bg-[#020202] mt-[-2px]" />
                       ))}
                     </div>
                     <div className="absolute bottom-0 left-0 right-0 h-px flex justify-between px-1 pointer-events-none">
                       {[...Array(8)].map((_, j) => (
-                        <span key={j} className="w-1 h-1 rounded-full bg-[#0c0c0c] mb-[-2px]" />
+                        <span key={j} className="w-1 h-1 rounded-full bg-[#020202] mb-[-2px]" />
                       ))}
                     </div>
 
@@ -150,7 +150,7 @@ export default function Passport() {
 
                     {/* Multi-trip badge */}
                     {stamp.tripCount > 1 && (
-                      <div className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full bg-[#3D81E3]/80 text-[9px] text-white flex items-center justify-center font-bold">
+                      <div className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full bg-[#B2D5E5]/80 text-[9px] text-white flex items-center justify-center font-bold">
                         {stamp.tripCount}
                       </div>
                     )}

@@ -44,7 +44,7 @@ export function WorldMap({ visitedGeoNames, wishlistGeoNames = [], onCountryClic
 
                 let defaultFill = '#13202e'
                 let hoverFill = '#1e3048'
-                if (visited) { defaultFill = '#1a3f7a'; hoverFill = '#3D81E3' }
+                if (visited) { defaultFill = '#1a3f7a'; hoverFill = '#B2D5E5' }
                 else if (wishlisted) { defaultFill = '#3d2200'; hoverFill = '#d97706' }
 
                 return (
@@ -55,9 +55,9 @@ export function WorldMap({ visitedGeoNames, wishlistGeoNames = [], onCountryClic
                     onMouseLeave={() => setTooltip('')}
                     onClick={() => onCountryClick?.(name)}
                     style={{
-                      default: { fill: defaultFill, stroke: '#0c0c0c', strokeWidth: 0.5, outline: 'none', transition: 'fill 0.15s' },
-                      hover:   { fill: hoverFill,   stroke: '#0c0c0c', strokeWidth: 0.5, outline: 'none', cursor: 'pointer' },
-                      pressed: { fill: '#0B2551', outline: 'none' },
+                      default: { fill: defaultFill, stroke: '#020202', strokeWidth: 0.5, outline: 'none', transition: 'fill 0.15s' },
+                      hover:   { fill: hoverFill,   stroke: '#020202', strokeWidth: 0.5, outline: 'none', cursor: 'pointer' },
+                      pressed: { fill: '#0a1a24', outline: 'none' },
                     }}
                   />
                 )
@@ -91,7 +91,7 @@ export function WorldMap({ visitedGeoNames, wishlistGeoNames = [], onCountryClic
       {tooltip && (
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-full bg-black/70 backdrop-blur-sm border border-white/10 text-xs text-white/80 pointer-events-none whitespace-nowrap">
           {visitedGeoNames.includes(tooltip) && (
-            <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#3D81E3] mr-2 mb-px" />
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#B2D5E5] mr-2 mb-px" />
           )}
           {wishlistGeoNames.includes(tooltip) && !visitedGeoNames.includes(tooltip) && (
             <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-500 mr-2 mb-px" />

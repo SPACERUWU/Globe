@@ -101,7 +101,7 @@ export default function Dashboard() {
   return (
     <AppLayout>
       {/* Page header */}
-      <div className="sticky top-0 z-20 bg-[#0c0c0c]/80 backdrop-blur-md border-b border-white/[0.06] px-6 py-4">
+      <div className="sticky top-0 z-20 bg-[#020202]/80 backdrop-blur-md border-b border-white/[0.06] px-6 py-4">
         <div className="flex items-center justify-between mb-2.5">
           <div>
             <h1 className="text-sm font-semibold text-white">World Map</h1>
@@ -121,7 +121,7 @@ export default function Dashboard() {
         <div className="flex items-center gap-3">
           <div className="flex-1 h-[3px] bg-white/[0.05] rounded-full overflow-hidden">
             <motion.div
-              className="h-full bg-gradient-to-r from-[#1a3f7a] to-[#3D81E3] rounded-full"
+              className="h-full bg-gradient-to-r from-[#1a3f7a] to-[#B2D5E5] rounded-full"
               initial={{ width: 0 }}
               animate={{ width: `${(uniqueCountries / 195) * 100}%` }}
               transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
@@ -255,7 +255,7 @@ export default function Dashboard() {
                   <div className="text-2xl mb-2">{flagEmoji(trip.country_code)}</div>
                   <p className="text-xs font-medium text-white leading-tight line-clamp-1 mb-0.5">{trip.title}</p>
                   <p className="text-[10px] text-white/35 mb-2.5">{fmtDate(trip.start_date)}</p>
-                  <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-[#3D81E3]/15 border border-[#3D81E3]/20 text-[10px] font-semibold text-[#3D81E3]">
+                  <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-[#B2D5E5]/15 border border-[#B2D5E5]/20 text-[10px] font-semibold text-[#B2D5E5]">
                     in {daysUntil} day{daysUntil !== 1 ? 's' : ''}
                   </span>
                 </motion.div>
@@ -368,7 +368,7 @@ export default function Dashboard() {
         <div className="px-6 pb-6">
           <div className="flex items-center gap-2 mb-4">
             <h2 className="text-sm font-semibold text-white">Shared with you</h2>
-            <span className="px-2 py-0.5 rounded-full bg-[#3D81E3]/15 border border-[#3D81E3]/20 text-[10px] font-semibold text-[#3D81E3]">
+            <span className="px-2 py-0.5 rounded-full bg-[#B2D5E5]/15 border border-[#B2D5E5]/20 text-[10px] font-semibold text-[#B2D5E5]">
               {sharedTrips.length}
             </span>
           </div>
@@ -391,7 +391,7 @@ export default function Dashboard() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-black/0" />
                 <div className="absolute inset-0 rounded-2xl border border-white/10" />
                 {/* Shared badge */}
-                <div className="absolute top-3 right-3 px-2 py-1 rounded-lg bg-[#3D81E3]/20 border border-[#3D81E3]/30 text-[9px] font-semibold text-[#3D81E3] flex items-center gap-1">
+                <div className="absolute top-3 right-3 px-2 py-1 rounded-lg bg-[#B2D5E5]/20 border border-[#B2D5E5]/30 text-[9px] font-semibold text-[#B2D5E5] flex items-center gap-1">
                   <Users className="w-2.5 h-2.5" /> Shared
                 </div>
                 <div className="relative z-10 p-4 flex flex-col h-full justify-end">

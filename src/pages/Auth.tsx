@@ -66,13 +66,13 @@ export default function Auth() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0c0c0c] text-white flex items-center justify-center p-6 relative overflow-hidden">
+    <div className="min-h-screen bg-[#020202] text-white flex items-center justify-center p-6 relative overflow-hidden">
       {/* Background video — same as landing */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <video autoPlay loop muted playsInline className="w-full h-full object-cover opacity-25 pointer-events-none"
           src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260508_064122_c4750c0e-7476-4b44-94a2-a85a65c63bf2.mp4"
         />
-        <div className="absolute inset-0 bg-[#0c0c0c]/70" />
+        <div className="absolute inset-0 bg-[#020202]/70" />
       </div>
 
       <motion.div

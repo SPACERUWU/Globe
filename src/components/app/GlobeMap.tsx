@@ -210,7 +210,7 @@ export function GlobeMap({ visitedGeoNames, wishlistGeoNames = [], onCountryClic
           </radialGradient>
           <radialGradient id="globe-atmo" cx="50%" cy="50%" r="50%">
             <stop offset="72%" stopColor="transparent" />
-            <stop offset="100%" stopColor="rgba(61,129,227,0.18)" />
+            <stop offset="100%" stopColor="rgba(178,213,229,0.18)" />
           </radialGradient>
           <clipPath id="globe-sphere-clip">
             <circle cx={cx} cy={cy} r={radius} />
@@ -223,9 +223,9 @@ export function GlobeMap({ visitedGeoNames, wishlistGeoNames = [], onCountryClic
         </defs>
 
         {/* Atmosphere rings */}
-        <circle cx={cx} cy={cy} r={radius + 12} fill="rgba(61,129,227,0.04)" />
-        <circle cx={cx} cy={cy} r={radius + 6}  fill="rgba(61,129,227,0.07)" />
-        <circle cx={cx} cy={cy} r={radius + 2}  fill="rgba(61,129,227,0.10)" />
+        <circle cx={cx} cy={cy} r={radius + 12} fill="rgba(178,213,229,0.04)" />
+        <circle cx={cx} cy={cy} r={radius + 6}  fill="rgba(178,213,229,0.07)" />
+        <circle cx={cx} cy={cy} r={radius + 2}  fill="rgba(178,213,229,0.10)" />
 
         {/* Ocean */}
         <circle cx={cx} cy={cy} r={radius} fill="#06101e" />
@@ -237,7 +237,7 @@ export function GlobeMap({ visitedGeoNames, wishlistGeoNames = [], onCountryClic
 
         {/* Equator */}
         {equatorD && (
-          <path d={equatorD} fill="none" stroke="rgba(61,129,227,0.35)" strokeWidth="0.9" strokeDasharray="3 4" clipPath="url(#globe-sphere-clip)" />
+          <path d={equatorD} fill="none" stroke="rgba(178,213,229,0.35)" strokeWidth="0.9" strokeDasharray="3 4" clipPath="url(#globe-sphere-clip)" />
         )}
 
         {/* Countries */}
@@ -294,7 +294,7 @@ export function GlobeMap({ visitedGeoNames, wishlistGeoNames = [], onCountryClic
         <circle cx={cx} cy={cy} r={radius} fill="url(#globe-atmo)"  pointerEvents="none" />
 
         {/* Border ring */}
-        <circle cx={cx} cy={cy} r={radius} fill="none" stroke="rgba(61,129,227,0.22)" strokeWidth="1.5" pointerEvents="none" />
+        <circle cx={cx} cy={cy} r={radius} fill="none" stroke="rgba(178,213,229,0.22)" strokeWidth="1.5" pointerEvents="none" />
       </svg>
 
       {/* Tooltip */}
@@ -303,7 +303,7 @@ export function GlobeMap({ visitedGeoNames, wishlistGeoNames = [], onCountryClic
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#111418]/95 border border-white/[0.12] text-xs text-white/80 backdrop-blur-sm shadow-2xl whitespace-nowrap">
             <span className={`w-2 h-2 rounded-full flex-shrink-0 ${
               tooltipContent.type === 'pin' ? 'bg-[#ff6b87]' :
-              tooltipContent.type === 'country' && tooltipContent.visited ? 'bg-[#3D81E3]' :
+              tooltipContent.type === 'country' && tooltipContent.visited ? 'bg-[#B2D5E5]' :
               tooltipContent.type === 'country' && tooltipContent.wishlist ? 'bg-amber-500' :
               'bg-white/15'
             }`} />

@@ -50,8 +50,8 @@ function WireframeGlobe() {
           <stop offset="100%" stopColor="#03080f" />
         </radialGradient>
         <radialGradient id="gb-glow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#00d2ff" stopOpacity="0.06" />
-          <stop offset="100%" stopColor="#00d2ff" stopOpacity="0" />
+          <stop offset="0%" stopColor="#B2D5E5" stopOpacity="0.06" />
+          <stop offset="100%" stopColor="#B2D5E5" stopOpacity="0" />
         </radialGradient>
         <clipPath id="gb-clip">
           <circle cx={cx} cy={cy} r={R} />
@@ -90,8 +90,8 @@ function WireframeGlobe() {
       <g clipPath="url(#gb-clip)" filter="url(#dot-glow)">
         {visitedDots.map(({ x, y }, i) => (
           <g key={i}>
-            <circle cx={x} cy={y} r={5} fill="#00d2ff" opacity={0.18} />
-            <circle cx={x} cy={y} r={2.5} fill="#00d2ff" opacity={0.95} />
+            <circle cx={x} cy={y} r={5} fill="#B2D5E5" opacity={0.18} />
+            <circle cx={x} cy={y} r={2.5} fill="#B2D5E5" opacity={0.95} />
           </g>
         ))}
       </g>
@@ -205,7 +205,7 @@ export function TravelDashboard() {
               </div>
               {/* Overlay label */}
               <div className="absolute bottom-3 left-4 flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-[#00d2ff] opacity-90" />
+                <span className="w-2 h-2 rounded-full bg-[#B2D5E5] opacity-90" />
                 <span className="text-[10px] text-white/50">6 countries plotted</span>
               </div>
             </div>
@@ -220,7 +220,7 @@ export function TravelDashboard() {
               {/* AI highlight */}
               <div className="rounded-lg bg-white/[0.04] border border-white/10 p-3">
                 <div className="flex items-center gap-1.5 mb-1.5">
-                  <Sparkles className="w-3 h-3" style={{ color: '#A4F4FD' }} />
+                  <Sparkles className="w-3 h-3" style={{ color: '#B2D5E5' }} />
                   <span className="text-[10px] font-semibold text-white/70">Highlight by Globe</span>
                 </div>
                 <p className="text-white/60 text-[11px] leading-[1.5]">

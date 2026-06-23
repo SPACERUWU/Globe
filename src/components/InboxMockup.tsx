@@ -14,8 +14,8 @@ const sidebarNav = [
 ]
 
 const labels = [
-  { name: 'Work', color: '#00d2ff' },
-  { name: 'Personal', color: '#A4F4FD' },
+  { name: 'Work', color: '#B2D5E5' },
+  { name: 'Personal', color: '#B2D5E5' },
   { name: 'Travel', color: '#f59e0b' },
   { name: 'Finance', color: '#10b981' },
 ]
@@ -168,7 +168,7 @@ export function InboxMockup() {
             <div className="px-4 pt-4 pb-3 border-b border-white/[0.06]">
               <h3 className="text-sm font-semibold text-white mb-2">Weekly product digest</h3>
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#00d2ff] to-[#0B2551] flex items-center justify-center text-[11px] font-semibold text-white flex-shrink-0">
+                <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#B2D5E5] to-[#0a1a24] flex items-center justify-center text-[11px] font-semibold text-white flex-shrink-0">
                   L
                 </div>
                 <div className="flex-1 min-w-0">
@@ -186,7 +186,7 @@ export function InboxMockup() {
               {/* AI Summary card */}
               <div className="rounded-lg bg-white/[0.04] border border-white/10 p-3">
                 <div className="flex items-center gap-1.5 mb-1.5">
-                  <Sparkles className="w-3 h-3" style={{ color: '#A4F4FD' }} />
+                  <Sparkles className="w-3 h-3" style={{ color: '#B2D5E5' }} />
                   <span className="text-[10px] font-semibold text-white/70">Summary by Aura</span>
                 </div>
                 <p className="text-white/60 text-[11px]">

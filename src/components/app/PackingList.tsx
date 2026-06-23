@@ -61,7 +61,7 @@ export function PackingList({ tripId }: { tripId: string }) {
         </div>
         <button
           onClick={() => setShowPresets(s => !s)}
-          className="text-[11px] text-[#3D81E3] hover:text-blue-300 transition-colors"
+          className="text-[11px] text-[#B2D5E5] hover:text-blue-300 transition-colors"
         >
           {showPresets ? 'Hide templates' : '+ Templates'}
         </button>
@@ -71,7 +71,7 @@ export function PackingList({ tripId }: { tripId: string }) {
       {items.length > 0 && (
         <div className="h-0.5 bg-white/[0.06] rounded-full mb-4 overflow-hidden">
           <div
-            className="h-full bg-[#3D81E3] rounded-full transition-all duration-500"
+            className="h-full bg-[#B2D5E5] rounded-full transition-all duration-500"
             style={{ width: `${(checkedCount / items.length) * 100}%` }}
           />
         </div>
@@ -118,7 +118,7 @@ export function PackingList({ tripId }: { tripId: string }) {
               onClick={() => toggleItem(item)}
               className={`w-5 h-5 rounded-md flex-shrink-0 flex items-center justify-center border transition-all ${
                 item.checked
-                  ? 'bg-[#3D81E3] border-[#3D81E3]'
+                  ? 'bg-[#B2D5E5] border-[#B2D5E5]'
                   : 'border-white/15 hover:border-white/30'
               }`}
             >

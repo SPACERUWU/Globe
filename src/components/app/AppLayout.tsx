@@ -37,7 +37,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
 
   return (
     // h-screen + overflow-hidden = only <main> scrolls, sidebar stays fixed
-    <div className="flex h-screen overflow-hidden bg-[#0c0c0c] text-white">
+    <div className="flex h-screen overflow-hidden bg-[#020202] text-white">
 
       {/* Sidebar — desktop only */}
       <aside className="hidden md:flex flex-col w-[220px] flex-shrink-0 border-r border-white/[0.06] bg-black/30">
@@ -93,7 +93,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
                 className="w-7 h-7 rounded-full object-cover flex-shrink-0 ring-1 ring-white/10"
               />
             ) : (
-              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#3D81E3] to-[#0B2551] flex items-center justify-center text-[11px] font-semibold flex-shrink-0">
+              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#B2D5E5] to-[#0a1a24] flex items-center justify-center text-[11px] font-semibold flex-shrink-0">
                 {initials}
               </div>
             )}

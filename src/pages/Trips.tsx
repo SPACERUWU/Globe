@@ -47,7 +47,7 @@ export default function Trips() {
 
   return (
     <AppLayout>
-      <div className="sticky top-0 z-20 bg-[#0c0c0c]/80 backdrop-blur-md border-b border-white/[0.06] px-6 py-4">
+      <div className="sticky top-0 z-20 bg-[#020202]/80 backdrop-blur-md border-b border-white/[0.06] px-6 py-4">
         <div className="flex items-center justify-between mb-3">
           <div>
             <h1 className="text-sm font-semibold text-white">All Trips</h1>
@@ -129,7 +129,7 @@ export default function Trips() {
                     </div>
                   )}
                   {trip.cover_photo_url && (
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[#0c0c0c]/20" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[#020202]/20" />
                   )}
                 </div>
 

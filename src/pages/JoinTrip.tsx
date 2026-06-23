@@ -76,10 +76,10 @@ export default function JoinTrip() {
   }
 
   return (
-    <div className="min-h-screen bg-[#030711] flex items-center justify-center p-6">
+    <div className="min-h-screen bg-[#020202] flex items-center justify-center p-6">
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] opacity-15"
-          style={{ background: 'radial-gradient(ellipse, #1a4a9a 0%, transparent 70%)' }} />
+          style={{ background: 'radial-gradient(ellipse, #1a3d52 0%, transparent 70%)' }} />
       </div>
 
       <motion.div
@@ -117,8 +117,8 @@ export default function JoinTrip() {
 
           {status === 'already' && (
             <div className="flex flex-col items-center gap-4">
-              <div className="w-14 h-14 rounded-2xl bg-[#3D81E3]/10 flex items-center justify-center">
-                <Users className="w-7 h-7 text-[#3D81E3]" />
+              <div className="w-14 h-14 rounded-2xl bg-[#B2D5E5]/10 flex items-center justify-center">
+                <Users className="w-7 h-7 text-[#B2D5E5]" />
               </div>
               <div>
                 <p className="text-white font-semibold">You own this trip</p>
@@ -137,7 +137,7 @@ export default function JoinTrip() {
                 <p className="text-white font-semibold">Can't join</p>
                 <p className="text-white/40 text-sm mt-1">{errorMsg}</p>
               </div>
-              <Link to="/app" className="mt-2 text-xs text-[#3D81E3] hover:text-blue-300 transition-colors">
+              <Link to="/app" className="mt-2 text-xs text-[#B2D5E5] hover:text-blue-300 transition-colors">
                 Go to your dashboard
               </Link>
             </div>

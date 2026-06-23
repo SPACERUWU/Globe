@@ -203,7 +203,7 @@ export function AddMemoryModal({ open, tripId, onClose, onCreated }: Props) {
                 disabled={locating}
                 className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-xs transition-all ${
                   lat !== null
-                    ? 'border-[#3D81E3]/40 bg-[#3D81E3]/10 text-[#3D81E3]'
+                    ? 'border-[#B2D5E5]/40 bg-[#B2D5E5]/10 text-[#B2D5E5]'
                     : 'border-white/[0.08] bg-white/[0.02] text-white/40 hover:text-white/60 hover:border-white/15'
                 } disabled:opacity-50`}
               >
